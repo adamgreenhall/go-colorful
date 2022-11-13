@@ -466,41 +466,18 @@ func FastLinearRgb(r, g, b float64) Color {
 	return Color{delinearize_fast(r), delinearize_fast(g), delinearize_fast(b)}
 }
 
-var xyz2rgbMatrix = [3][3]float64{
-	{3.2409699419045214, -1.5373831775700935, -0.49861076029300328},
-	{-0.96924363628087983, 1.8759675015077207, 0.041555057407175613},
-	{0.055630079696993609, -0.20397695888897657, 1.0569715142428786},
-}
-
-var rgb2xyzMatrix = [3][3]float64{
-	{0.41239079926595948, 0.35758433938387796, 0.18048078840183429},
-	{0.21263900587151036, 0.71516867876775593, 0.072192315360733715},
-	{0.019330818715591851, 0.11919477979462599, 0.95053215224966058},
-}
-
-// var xyz2rgbMatrix = [3][3]float64{
-// 	{3.24048134, -1.53715152, -0.49853633},
-// 	{-0.96925495, 1.87599, 0.04155593},
-// 	{0.05564664, -0.20404134, 1.05731107},
-// }
-// var rgb2xyzMatrix = [3][3]float64{
-// 	{0.412453, 0.357580, 0.180423},
-// 	{0.212671, 0.715160, 0.072169},
-// 	{0.019334, 0.119193, 0.950227},
-// }
-
 // XyzToLinearRgb converts from CIE XYZ-space to Linear RGB space.
 func XyzToLinearRgb(x, y, z float64) (r, g, b float64) {
-	r = xyz2rgbMatrix[0][0]*x + xyz2rgbMatrix[0][1]*y + xyz2rgbMatrix[0][2]*z
-	g = xyz2rgbMatrix[1][0]*x + xyz2rgbMatrix[1][1]*y + xyz2rgbMatrix[1][2]*z
-	b = xyz2rgbMatrix[2][0]*x + xyz2rgbMatrix[2][1]*y + xyz2rgbMatrix[2][2]*z
+	r = 3.2409699419045214*x - 1.5373831775700935*y - 0.49861076029300328*z
+	g = -0.96924363628087983*x + 1.8759675015077207*y + 0.041555057407175613*z
+	b = 0.055630079696993609*x - 0.20397695888897657*y + 1.0569715142428786*z
 	return
 }
 
 func LinearRgbToXyz(r, g, b float64) (x, y, z float64) {
-	x = rgb2xyzMatrix[0][0]*r + rgb2xyzMatrix[0][1]*g + rgb2xyzMatrix[0][2]*b
-	y = rgb2xyzMatrix[1][0]*r + rgb2xyzMatrix[1][1]*g + rgb2xyzMatrix[1][2]*b
-	z = rgb2xyzMatrix[2][0]*r + rgb2xyzMatrix[2][1]*g + rgb2xyzMatrix[2][2]*b
+	x = 0.41239079926595948*r + 0.35758433938387796*g + 0.18048078840183429*b
+	y = 0.21263900587151036*r + 0.71516867876775593*g + 0.072192315360733715*b
+	z = 0.019330818715591851*r + 0.11919477979462599*g + 0.95053215224966058*b
 	return
 }
 
