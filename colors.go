@@ -586,11 +586,14 @@ func XyzToLab(x, y, z float64) (l, a, b float64) {
 	return XyzToLabWhiteRef(x, y, z, D65)
 }
 
+const convLABx2a float64 = 3.90625 // 500/128
+const convLABy2b float64 = 1.5625  // 200/128
+
 func XyzToLabWhiteRef(x, y, z float64, wref [3]float64) (l, a, b float64) {
 	fy := lab_f(y / wref[1])
 	l = 1.16*fy - 0.16
-	a = 5.0 * (lab_f(x/wref[0]) - fy)
-	b = 2.0 * (fy - lab_f(z/wref[2]))
+	a = convLABx2a * (lab_f(x/wref[0]) - fy)
+	b = convLABy2b * (fy - lab_f(z/wref[2]))
 	return
 }
 
@@ -608,9 +611,9 @@ func LabToXyz(l, a, b float64) (x, y, z float64) {
 
 func LabToXyzWhiteRef(l, a, b float64, wref [3]float64) (x, y, z float64) {
 	l2 := (l + 0.16) / 1.16
-	x = wref[0] * lab_finv(l2+a/5.0)
+	x = wref[0] * lab_finv(l2+a/convLABx2a)
 	y = wref[1] * lab_finv(l2)
-	z = wref[2] * lab_finv(l2-b/2.0)
+	z = wref[2] * lab_finv(l2-b/convLABy2b)
 	return
 }
 
