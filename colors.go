@@ -917,7 +917,7 @@ func LabToHcl(L, a, b float64) (h, c, l float64) {
 	} else {
 		h = 0.0
 	}
-	c = math.Sqrt(sq(a) + sq(b))
+	c = math.Sqrt(sq(a*128)+sq(b*128)) / 100
 	l = L
 	return
 }
@@ -940,8 +940,8 @@ func Hcl(h, c, l float64) Color {
 
 func HclToLab(h, c, l float64) (L, a, b float64) {
 	H := 0.01745329251994329576 * h // Deg2Rad
-	a = c * math.Cos(H)
-	b = c * math.Sin(H)
+	a = c * math.Cos(H) / 128 * 100
+	b = c * math.Sin(H) / 128 * 100
 	L = l
 	return
 }
