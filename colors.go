@@ -648,6 +648,8 @@ func LabWhiteRef(l, a, b float64, wref [3]float64) Color {
 func (c1 Color) DistanceLab(c2 Color) float64 {
 	l1, a1, b1 := c1.Lab()
 	l2, a2, b2 := c2.Lab()
+	l1, a1, b1 = l1*100.0, a1*128.0, b1*128.0
+	l2, a2, b2 = l2*100.0, a2*128.0, b2*128.0
 	return math.Sqrt(sq(l1-l2) + sq(a1-a2) + sq(b1-b2))
 }
 
@@ -664,10 +666,10 @@ func (cl Color) DistanceCIE94(cr Color) float64 {
 
 	// NOTE: Since all those formulas expect L,a,b values 100x larger than we
 	//       have them in this library, we either need to adjust all constants
-	//       in the formula, or convert the ranges of L,a,b before, and then
-	//       scale the distances down again. The latter is less error-prone.
-	l1, a1, b1 = l1*100.0, a1*100.0, b1*100.0
-	l2, a2, b2 = l2*100.0, a2*100.0, b2*100.0
+	//       in the formula, or convert the ranges of L,a,b before.
+	// 		 The latter is less error-prone.
+	l1, a1, b1 = l1*100.0, a1*128.0, b1*128.0
+	l2, a2, b2 = l2*100.0, a2*128.0, b2*128.0
 
 	kl := 1.0 // 2.0 for textiles
 	kc := 1.0
@@ -690,7 +692,7 @@ func (cl Color) DistanceCIE94(cr Color) float64 {
 	vC2 := sq(deltaCab / (kc * sc))
 	vH2 := deltaHab2 / sq(kh*sh)
 
-	return math.Sqrt(vL2+vC2+vH2) * 0.01 // See above.
+	return math.Sqrt(vL2 + vC2 + vH2)
 }
 
 // DistanceCIEDE2000 uses the Delta E 2000 formula to calculate color
@@ -706,10 +708,9 @@ func (cl Color) DistanceCIEDE2000klch(cr Color, kl, kc, kh float64) float64 {
 	l1, a1, b1 := cl.Lab()
 	l2, a2, b2 := cr.Lab()
 
-	// As with CIE94, we scale up the ranges of L,a,b beforehand and scale
-	// them down again afterwards.
-	l1, a1, b1 = l1*100.0, a1*100.0, b1*100.0
-	l2, a2, b2 = l2*100.0, a2*100.0, b2*100.0
+	// As with CIE94, we scale up the ranges of L,a,b beforehand
+	l1, a1, b1 = l1*100.0, a1*128.0, b1*128.0
+	l2, a2, b2 = l2*100.0, a2*128.0, b2*128.0
 
 	cab1 := math.Sqrt(sq(a1) + sq(b1))
 	cab2 := math.Sqrt(sq(a2) + sq(b2))
@@ -774,7 +775,7 @@ func (cl Color) DistanceCIEDE2000klch(cr Color, kl, kc, kh float64) float64 {
 	sh := 1 + 0.015*cpmean*t
 	rt := -math.Sin(2*deltaTheta*math.Pi/180) * rc
 
-	return math.Sqrt(sq(deltaLp/(kl*sl))+sq(deltaCp/(kc*sc))+sq(deltaHp/(kh*sh))+rt*(deltaCp/(kc*sc))*(deltaHp/(kh*sh))) * 0.01
+	return math.Sqrt(sq(deltaLp/(kl*sl)) + sq(deltaCp/(kc*sc)) + sq(deltaHp/(kh*sh)) + rt*(deltaCp/(kc*sc))*(deltaHp/(kh*sh)))
 }
 
 // BlendLab blends two colors in the L*a*b* color-space, which should result in a smoother blend.
